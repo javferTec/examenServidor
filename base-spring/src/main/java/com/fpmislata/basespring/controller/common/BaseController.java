@@ -1,6 +1,6 @@
 package com.fpmislata.basespring.controller.common;
-
 import com.fpmislata.basespring.controller.common.pagination.PaginatedResponse;
+import com.fpmislata.basespring.domain.model.ListWithCount;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @Controller
@@ -20,7 +21,11 @@ public class BaseController {
     private String defaultPageSize;
 
     public int getPageSize(Integer size) {
-        return (size != null) ? size : Integer.parseInt(defaultPageSize);
+        int pageSize = (size != null) ? size : Integer.parseInt(defaultPageSize);
+        if (pageSize < 1) {
+            throw new IllegalArgumentException("Page index must be greater than zero");
+        }
+        return pageSize;
     }
 
     public <T> ResponseEntity<PaginatedResponse<T>> createPaginatedResponse(
@@ -32,22 +37,23 @@ public class BaseController {
 
     // Metodo generico para getAll
     public <Entity, Collection> ResponseEntity<PaginatedResponse<Collection>> getAll(
-            int page, Integer size,
-            Function<Integer, List<Entity>> fetchEntities,
+            int page,
+            Integer size,
+            BiFunction<Integer, Integer, ListWithCount<Entity>> fetchWithCount,
             Function<Entity, Collection> mapToCollection,
-            int totalCount,
             String baseUrl) {
 
         int pageSize = getPageSize(size);
+        ListWithCount<Entity> result = fetchWithCount.apply((page - 1), pageSize);
 
-        List<Collection> items = fetchEntities.apply(page - 1).stream()
+        List<Collection> items = result.getList().stream()
                 .map(mapToCollection)
                 .toList();
 
-        return createPaginatedResponse(items, totalCount, page, pageSize, baseUrl);
+        return createPaginatedResponse(items, (int) result.getCount(), page, pageSize, baseUrl);
     }
 
-    // Metodo generico para findById
+    // Metodo generico para findByIsbn
     public <Entity, Detail> ResponseEntity<Detail> getById(
             Integer id,
             Function<Integer, Entity> fetchEntityById,

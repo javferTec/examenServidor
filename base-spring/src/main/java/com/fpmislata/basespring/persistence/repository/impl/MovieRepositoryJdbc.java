@@ -1,12 +1,12 @@
 package com.fpmislata.basespring.persistence.repository.impl;
 
+import com.fpmislata.basespring.domain.model.ListWithCount;
 import com.fpmislata.basespring.domain.model.Movie;
 import com.fpmislata.basespring.domain.repository.MovieRepository;
 import com.fpmislata.basespring.persistence.dao.db.MovieDaoDb;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,7 +21,7 @@ public class MovieRepositoryJdbc implements MovieRepository {
     }
 
     @Override
-    public List<Movie> getAll(int offset, int size) {
+    public ListWithCount<Movie> getAll(int offset, int size) {
         return movieDaoDb.getAll(offset, size);
     }
 

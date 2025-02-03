@@ -1,16 +1,16 @@
 package com.fpmislata.basespring.domain.service.impl;
 
 import com.fpmislata.basespring.common.annotation.domain.DomainService;
+import com.fpmislata.basespring.domain.common.util.helper.EntityHelper;
 import com.fpmislata.basespring.domain.model.Actor;
 import com.fpmislata.basespring.domain.model.Director;
+import com.fpmislata.basespring.domain.model.ListWithCount;
 import com.fpmislata.basespring.domain.model.Movie;
 import com.fpmislata.basespring.domain.repository.MovieRepository;
 import com.fpmislata.basespring.domain.service.MovieService;
-import com.fpmislata.basespring.domain.common.util.helper.EntityHelper;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @DomainService
@@ -27,7 +27,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public List<Movie> getAll(int offset, int size) {
+    public ListWithCount<Movie> getAll(int offset, int size) {
         return movieRepository.getAll(offset, size);
     }
 
